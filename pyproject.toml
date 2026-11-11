@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 79
+exclude = ["migrations", ".venv", "venv"]
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "E", "F", "I",
+    "UP",
+    "B",
+    "DJ",
+]
+ignore = ["E501"]
