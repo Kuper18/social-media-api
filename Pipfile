@@ -9,6 +9,7 @@ djangorestframework = "*"
 
 [dev-packages]
 ruff = "*"
+djangorestframework-stubs = "*"
 
 [requires]
 python_version = "3.14"
