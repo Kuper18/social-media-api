@@ -129,9 +129,21 @@ STATIC_URL = "static/"
 
 MAILERS = {
     "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": "127.0.0.1",
+            "use_tls": False,
+            "use_ssl": False,
+            "username": "",
+            "password": "",
+            "port": 2525,
+            "timeout": 10,
+        },
     },
 }
+
+DEFAULT_FROM_EMAIL = "admin@gmail.com"
+FRONTEND_URL = "http://127.0.0.1:3000"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
