@@ -5,8 +5,15 @@ from rest_framework import serializers
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ("id", "email", "first_name", "last_name", "password")
-        read_only_fields = ("id", "is_staff")
+        fields = (
+            "id",
+            "email",
+            "is_verified",
+            "first_name",
+            "last_name",
+            "password",
+        )
+        read_only_fields = ("id", "is_staff", "is_verified")
 
         extra_kwargs = {
             "password": {

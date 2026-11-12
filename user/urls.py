@@ -9,7 +9,7 @@ from user.views import CreateUserView
 urlpatterns = (
     path("register/", CreateUserView.as_view(), name="create-user"),
     path("login/", TokenObtainPairView.as_view(), name="login-user"),
-    path("/token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
 )
 
 app_name = "user"
