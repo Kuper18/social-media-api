@@ -4,7 +4,7 @@ services:
     container_name: mailpit
     restart: unless-stopped
     volumes:
-      - ./data:/data
+      - ./mailpitdata:/data
     ports:
       - "8025:8025"
       - "2525:1025"
