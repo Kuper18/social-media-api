@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from user.models.email_confirmation_token import EmailConfirmationToken
 from user.serializers import UserSerializer
-from user.utils import send_confirmation_email
+from user.tasks import send_confirmation_email
 
 
 class CreateUserView(CreateAPIView):
@@ -21,7 +21,11 @@ class CreateUserView(CreateAPIView):
         user = serializer.save()
         token = EmailConfirmationToken.objects.create(user=user)
 
-        send_confirmation_email(user, token)
+        send_confirmation_email.delay_on_commit(
+            user_email=user.email,
+            token_id=token.pk,
+            user_first_name=user.first_name,
+        )
 
         return Response(
             {"detail": "Account created. Check your email to confirm it."},

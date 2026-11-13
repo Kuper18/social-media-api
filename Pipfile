@@ -7,10 +7,12 @@ name = "pypi"
 django = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
+celery = {extras = ["redis"], version = "*"}
 
 [dev-packages]
 ruff = "*"
 djangorestframework-stubs = "*"
+celery-types = "*"
 
 [requires]
 python_version = "3.14"
