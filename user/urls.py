@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from user.views import ConfirmEmailView, CreateUserView
+from user.views import ConfirmEmailView, CreateUserView, ResendConfirmationView
 
 urlpatterns = (
     path("register/", CreateUserView.as_view(), name="create-user"),
@@ -14,6 +14,11 @@ urlpatterns = (
         "verify/<uuid:pk>/",
         ConfirmEmailView.as_view(),
         name="verify-user",
+    ),
+    path(
+        "resend/verification/",
+        ResendConfirmationView.as_view(),
+        name="resend-verify-user",
     ),
 )
 

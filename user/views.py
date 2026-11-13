@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework import status
 from rest_framework.generics import (
@@ -50,10 +51,39 @@ class ConfirmEmailView(APIView):
             )
 
         user = token.user
-        user.is_active = True
+        user.is_verified = True
         user.save()
         token.delete()
 
         return Response(
             {"detail": "Email confirmed."}, status=status.HTTP_200_OK
+        )
+
+
+class ResendConfirmationView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request: Request) -> Response:
+        email = request.data.get("email", None)
+
+        if email is None:
+            return Response(
+                {"detail": "Please provide an email address."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = (
+            get_user_model()
+            .objects.filter(email=email, is_verified=False)
+            .first()
+        )
+
+        if user:
+            user.email_conformation_token.all().delete()
+            token = EmailConfirmationToken.objects.create(user=user)
+            send_confirmation_email(user, token)
+
+        return Response(
+            {"detail": "If the account exists, an email was sent."},
+            status=status.HTTP_200_OK,
         )
