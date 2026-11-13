@@ -136,7 +136,7 @@ MAILERS = {
             "use_ssl": False,
             "username": "",
             "password": "",
-            "port": 2525,
+            "port": 1024,
             "timeout": 10,
         },
     },

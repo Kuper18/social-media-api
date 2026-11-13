@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
+    get_object_or_404,
 )
 from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
@@ -33,4 +34,26 @@ class CreateUserView(CreateAPIView):
 
 
 class ConfirmEmailView(APIView):
-    pass
+    permission_classes = (AllowAny,)
+
+    def post(self, request: Request, pk) -> Response:
+        token = get_object_or_404(
+            EmailConfirmationToken.objects.select_related("user"),
+            pk=pk,
+        )
+
+        if token.is_expired:
+            token.delete()
+            return Response(
+                {"detail": "Token expired."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = token.user
+        user.is_active = True
+        user.save()
+        token.delete()
+
+        return Response(
+            {"detail": "Email confirmed."}, status=status.HTTP_200_OK
+        )
