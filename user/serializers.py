@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,3 +36,16 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class VerifiedTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        if not self.user.is_verified:
+            raise exceptions.AuthenticationFailed(
+                "Email is not verified. Please verify your email and try again.",
+                code="email_not_verified",
+            )
+
+        return data

@@ -1,3 +1,4 @@
+from .login import LoginView as LoginView
 from .user import CreateUserView as CreateUserView
 from .verification import (
     ConfirmEmailView as ConfirmEmailView,
