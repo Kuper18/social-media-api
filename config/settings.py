@@ -166,3 +166,5 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_BROKER_URL = "redis://:password@localhost:6379/1"
 CELERY_RESULT_BACKEND = "redis://:password@localhost:6379/2"
+
+PASSWORD_RESET_TIMEOUT = 60 * 30  # 30 minutes
