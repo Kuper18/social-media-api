@@ -2,12 +2,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import (
     default_token_generator,
 )
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from user.models import ResetPassword
 from user.serializers.reset_password import ResetPasswordSerializer
 
 
@@ -15,17 +16,18 @@ class ResetPasswordView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = ResetPasswordSerializer
 
-    def post(self, request, token: str):
+    def post(self, request, uidb64: str, token: str) -> Response:
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_password = serializer.validated_data["new_password"]
-        reset_token = ResetPassword.objects.filter(token=token).first()
+        user_model = get_user_model()
 
-        user = (
-            get_user_model().objects.filter(email=reset_token.email).first()
-            if reset_token
-            else None
-        )
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = user_model.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, user_model.DoesNotExist):
+            user = None
+
         if not user or not default_token_generator.check_token(
             user, token=token
         ):
@@ -36,7 +38,6 @@ class ResetPasswordView(APIView):
 
         user.set_password(new_password)
         user.save(update_fields=["password"])
-        ResetPassword.objects.filter(email=user.email).delete()
 
         return Response(
             {"detail": "Password reset."}, status=status.HTTP_200_OK

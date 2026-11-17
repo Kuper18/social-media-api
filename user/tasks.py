@@ -19,8 +19,8 @@ def send_confirmation_email(
 
 
 @shared_task
-def send_password_reset_email(token: str, user_email: str) -> None:
-    link = f"{settings.FRONTEND_URL}/reset-password/{token}/"
+def send_password_reset_email(token: str, user_email: str, uid: str) -> None:
+    link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
 
     send_mail(
         subject="Password reset",
