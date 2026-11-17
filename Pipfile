@@ -8,6 +8,7 @@ django = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 celery = {extras = ["redis"], version = "*"}
+psycopg = {extras = ["binary"], version = "*"}
 
 [dev-packages]
 ruff = "*"
