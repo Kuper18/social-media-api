@@ -14,6 +14,7 @@ from user.tasks import send_confirmation_email
 
 class ConfirmEmailView(APIView):
     permission_classes = (AllowAny,)
+    throttle_scope = "confirm_email"
 
     def post(self, request: Request, pk) -> Response:
         token = (
@@ -49,6 +50,7 @@ class ConfirmEmailView(APIView):
 class ResendConfirmationView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = ResendConfirmationTokenSerializer
+    throttle_scope = "resend_email_confirmation"
 
     def post(self, request: Request) -> Response:
         serializer = self.serializer_class(data=request.data)

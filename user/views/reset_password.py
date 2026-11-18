@@ -15,6 +15,7 @@ from user.serializers.reset_password import ResetPasswordSerializer
 class ResetPasswordView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = ResetPasswordSerializer
+    throttle_scope = "reset_password"
 
     def post(self, request, uidb64: str, token: str) -> Response:
         serializer = self.serializer_class(data=request.data)
