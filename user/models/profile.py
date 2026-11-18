@@ -2,12 +2,12 @@ from django.db import models
 from django.db.models.functions import Lower
 
 from config import settings
+from user.utils import generate_avatar_path
 
 
 class Profile(models.Model):
     nickname = models.CharField(max_length=100, unique=True)
-    # TODO: write upload_to function
-    avatar = models.ImageField(blank=True, upload_to="avatar")
+    avatar = models.ImageField(blank=True, upload_to=generate_avatar_path)
     bio = models.TextField(blank=True)
     city = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
