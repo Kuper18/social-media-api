@@ -1,0 +1,33 @@
+from django.db import transaction
+from rest_framework import status
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import AllowAny
+from rest_framework.request import Request
+from rest_framework.response import Response
+
+from user.models.email_confirmation_token import EmailConfirmationToken
+from user.serializers import UserSerializer
+from user.tasks import send_confirmation_email
+
+
+class CreateUserView(CreateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = (AllowAny,)
+
+    @transaction.atomic
+    def create(self, request: Request, *args, **kwargs) -> Response:
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        token = EmailConfirmationToken.objects.create(user=user)
+
+        send_confirmation_email.delay_on_commit(
+            user_email=user.email,
+            token_id=token.pk,
+            user_first_name=user.first_name,
+        )
+
+        return Response(
+            {"detail": "Account created. Check your email to confirm it."},
+            status=status.HTTP_201_CREATED,
+        )
