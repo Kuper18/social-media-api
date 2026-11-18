@@ -27,8 +27,18 @@ def env_bool(name: str, default: bool = False) -> bool:
     )
 
 
+def get_redis_url(db_number: int) -> str:
+    return (
+        f"redis://:{os.environ.get('REDIS_PASSWORD')}@"
+        f"{os.environ.get('REDIS_HOST')}:"
+        f"{os.environ.get('REDIS_PORT')}/"
+        f"{db_number}"
+    )
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -161,7 +171,18 @@ FRONTEND_URL = os.environ.get("FRONTEND_URL")
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+    ),
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "register_user": "3/hour",
+        "login": "5/min",
+        "confirm_email": "5/min",
+        "resend_email_confirmation": "3/hour",
+        "forgot_password": "3/hour",
+        "reset_password": "5/hour",
+    },
 }
 
 
@@ -177,7 +198,7 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CELERY_TASK_SERIALIZER = "json"
 CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_BROKER_URL = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/1"
-CELERY_RESULT_BACKEND = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/2"
+CELERY_BROKER_URL = get_redis_url(1)
+CELERY_RESULT_BACKEND = get_redis_url(2)
 
 PASSWORD_RESET_TIMEOUT = 60 * 30  # 30 minutes

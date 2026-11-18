@@ -14,6 +14,7 @@ from user.tasks import send_password_reset_email
 class ForgotPasswordView(APIView):
     permission_classes = (AllowAny,)
     serializer_class = ForgotPasswordSerializer
+    throttle_scope = "forgot_password"
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)

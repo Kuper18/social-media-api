@@ -13,6 +13,7 @@ from user.tasks import send_confirmation_email
 class CreateUserView(CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
+    throttle_scope = "register_user"
 
     @transaction.atomic
     def create(self, request: Request, *args, **kwargs) -> Response:
