@@ -202,3 +202,24 @@ CELERY_BROKER_URL = get_redis_url(1)
 CELERY_RESULT_BACKEND = get_redis_url(2)
 
 PASSWORD_RESET_TIMEOUT = 60 * 30  # 30 minutes
+
+# cloud storage settings
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("AWS_ACCESS_KEY_ID"),
+            "secret_key": os.environ.get("AWS_SECRET_ACCESS_KEY"),
+            "bucket_name": os.environ.get("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": os.environ.get("AWS_S3_REGION_NAME"),
+            "endpoint_url": os.environ.get("AWS_S3_ENDPOINT_URL"),
+            "signature_version": os.environ.get("AWS_SIGNATURE_VERSION"),
+            "file_overwrite": env_bool("AWS_S3_FILE_OVERWRITE"),
+            "querystring_auth": env_bool("AWS_QUERYSTRING_AUTH"),
+            "default_acl": None,
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
