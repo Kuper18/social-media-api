@@ -9,6 +9,7 @@ from user.models import Profile
 from user.paginations import PageNumberPagination
 from user.permissions import IsOwnerOrReadOnly
 from user.serializers import AvatarSerializer, ProfileSerializer
+from user.serializers.profile import ProfileRetrieveSerializer
 
 
 class ProfileViewSet(
@@ -25,6 +26,9 @@ class ProfileViewSet(
     def get_serializer_class(self):
         if self.action == "upload_avatar":
             return AvatarSerializer
+
+        if self.action == "retrieve":
+            return ProfileRetrieveSerializer
 
         return ProfileSerializer
 

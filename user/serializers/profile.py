@@ -16,13 +16,11 @@ class ProfileSerializer(serializers.ModelSerializer):
             "education",
             "birth_date",
             "created_at",
-            "updated_at",
         )
         read_only_fields = (
             "id",
             "avatar",
             "created_at",
-            "updated_at",
         )
 
     def validate(self, attrs):
@@ -34,6 +32,29 @@ class ProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("You already have a profile.")
 
         return attrs
+
+
+class ProfileRetrieveSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(
+        source="user.first_name", read_only=True
+    )
+    last_name = serializers.CharField(source="user.last_name", read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = (
+            "id",
+            "nickname",
+            "first_name",
+            "last_name",
+            "avatar",
+            "bio",
+            "city",
+            "country",
+            "education",
+            "birth_date",
+            "created_at",
+        )
 
 
 class AvatarSerializer(serializers.ModelSerializer):
