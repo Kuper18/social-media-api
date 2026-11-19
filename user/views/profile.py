@@ -1,10 +1,13 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from user.filters import ProfileFilter
 from user.models import Profile
 from user.paginations import PageNumberPagination
 from user.permissions import IsOwnerOrReadOnly
@@ -22,6 +25,9 @@ class ProfileViewSet(
     queryset = Profile.objects.select_related("user")
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     pagination_class = PageNumberPagination
+    filter_backends = (SearchFilter, DjangoFilterBackend)
+    filterset_class = ProfileFilter
+    search_fields = ("nickname",)
 
     def get_serializer_class(self):
         if self.action == "upload_avatar":

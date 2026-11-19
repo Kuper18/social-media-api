@@ -11,6 +11,7 @@ celery = {extras = ["redis"], version = "*"}
 psycopg = {extras = ["binary"], version = "*"}
 pillow = "*"
 django-storages = {extras = ["s3"], version = "*"}
+django-filter = "*"
 
 [dev-packages]
 ruff = "*"
