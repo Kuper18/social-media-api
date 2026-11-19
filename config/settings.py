@@ -172,9 +172,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
-    ),
+    # "DEFAULT_PERMISSION_CLASSES": (
+    #     "rest_framework.permissions.IsAuthenticated",
+    # ),
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.ScopedRateThrottle",
     ],
@@ -219,6 +219,7 @@ STORAGES = {
             "signature_version": os.environ.get("AWS_SIGNATURE_VERSION"),
             "file_overwrite": env_bool("AWS_S3_FILE_OVERWRITE"),
             "querystring_auth": env_bool("AWS_QUERYSTRING_AUTH"),
+            "custom_domain": os.environ.get("AWS_S3_CUSTOM_DOMAIN"),
             "default_acl": None,
         },
     },
