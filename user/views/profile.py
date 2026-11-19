@@ -1,10 +1,12 @@
 from rest_framework import mixins, status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from user.models import Profile
+from user.permissions import IsOwnerOrReadOnly
 from user.serializers import AvatarSerializer, ProfileSerializer
 
 
@@ -16,6 +18,7 @@ class ProfileViewSet(
     GenericViewSet,
 ):
     queryset = Profile.objects.select_related("user")
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
 
     def get_serializer_class(self):
         if self.action == "upload_avatar":
