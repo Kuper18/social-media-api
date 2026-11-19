@@ -44,8 +44,12 @@ def get_redis_url(db_number: int) -> str:
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
+APP_ENV = os.getenv("APP_ENV")
+IS_DEV = APP_ENV == "development"
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = IS_DEV
 
 ALLOWED_HOSTS = []
 
@@ -60,8 +64,19 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "user",
 ]
+
+if IS_DEV:
+    INSTALLED_APPS += ["debug_toolbar"]
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": "debug_toolbar.middleware.show_toolbar_with_docker",
+    }
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
+
 
 AUTH_USER_MODEL = "user.User"
 
@@ -74,6 +89,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if IS_DEV:
+    MIDDLEWARE.insert(
+        0,
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
 
 ROOT_URLCONF = "config.urls"
 
@@ -172,6 +193,9 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.ScopedRateThrottle",
     ],
@@ -188,8 +212,12 @@ REST_FRAMEWORK = {
 
 # Simple JWT configuration
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.environ.get("JWT_ACCESS_TOKEN_LIFETIME", 5))
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=int(os.environ.get("JWT_REFRESH_TOKEN_LIFETIME", 7))
+    ),
 }
 
 # Celery Configuration Options
@@ -202,3 +230,25 @@ CELERY_BROKER_URL = get_redis_url(1)
 CELERY_RESULT_BACKEND = get_redis_url(2)
 
 PASSWORD_RESET_TIMEOUT = 60 * 30  # 30 minutes
+
+# cloud storage settings
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "access_key": os.environ.get("AWS_ACCESS_KEY_ID"),
+            "secret_key": os.environ.get("AWS_SECRET_ACCESS_KEY"),
+            "bucket_name": os.environ.get("AWS_STORAGE_BUCKET_NAME"),
+            "region_name": os.environ.get("AWS_S3_REGION_NAME"),
+            "endpoint_url": os.environ.get("AWS_S3_ENDPOINT_URL"),
+            "signature_version": os.environ.get("AWS_SIGNATURE_VERSION"),
+            "file_overwrite": env_bool("AWS_S3_FILE_OVERWRITE"),
+            "querystring_auth": env_bool("AWS_QUERYSTRING_AUTH"),
+            "custom_domain": os.environ.get("AWS_S3_CUSTOM_DOMAIN"),
+            "default_acl": None,
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}

@@ -18,7 +18,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from config.settings import IS_DEV
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("user.urls", namespace="user")),
 ]
+
+if IS_DEV:
+    from debug_toolbar.toolbar import debug_toolbar_urls
+
+    urlpatterns += debug_toolbar_urls()
