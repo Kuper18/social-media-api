@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from user.models import Profile
+from user.paginations import PageNumberPagination
 from user.permissions import IsOwnerOrReadOnly
 from user.serializers import AvatarSerializer, ProfileSerializer
 
@@ -19,6 +20,7 @@ class ProfileViewSet(
 ):
     queryset = Profile.objects.select_related("user")
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+    pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
         if self.action == "upload_avatar":
