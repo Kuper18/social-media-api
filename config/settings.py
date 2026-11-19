@@ -191,8 +191,12 @@ REST_FRAMEWORK = {
 
 # Simple JWT configuration
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.environ.get("JWT_ACCESS_TOKEN_LIFETIME", 5))
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=int(os.environ.get("JWT_REFRESH_TOKEN_LIFETIME", 7))
+    ),
 }
 
 # Celery Configuration Options
