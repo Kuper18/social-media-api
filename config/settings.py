@@ -44,8 +44,12 @@ def get_redis_url(db_number: int) -> str:
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
+APP_ENV = os.getenv("APP_ENV")
+IS_DEV = APP_ENV == "development"
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = IS_DEV
 
 ALLOWED_HOSTS = []
 
@@ -63,6 +67,16 @@ INSTALLED_APPS = [
     "user",
 ]
 
+if IS_DEV:
+    INSTALLED_APPS += ["debug_toolbar"]
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": "debug_toolbar.middleware.show_toolbar_with_docker",
+    }
+    INTERNAL_IPS = [
+        "127.0.0.1",
+    ]
+
+
 AUTH_USER_MODEL = "user.User"
 
 MIDDLEWARE = [
@@ -74,6 +88,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if IS_DEV:
+    MIDDLEWARE.insert(
+        0,
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
 
 ROOT_URLCONF = "config.urls"
 

@@ -16,6 +16,7 @@ django-storages = {extras = ["s3"], version = "*"}
 ruff = "*"
 djangorestframework-stubs = "*"
 celery-types = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.14"
