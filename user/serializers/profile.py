@@ -25,6 +25,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             "updated_at",
         )
 
+    def validate(self, attrs):
+        user = self.context["request"].user
+
+        is_profile = Profile.objects.filter(user=user).exists()
+
+        if is_profile and self.instance is None:
+            raise serializers.ValidationError("You already have a profile.")
+
+        return attrs
+
 
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
