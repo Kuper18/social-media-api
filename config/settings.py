@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "user",
+    "follower",
 ]
 
 if IS_DEV:
