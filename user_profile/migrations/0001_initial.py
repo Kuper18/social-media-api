@@ -2,7 +2,7 @@
 
 import django.db.models.deletion
 import django.db.models.functions.text
-import user.utils
+import user_profile.utils
 from django.conf import settings
 from django.db import migrations, models
 
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('nickname', models.CharField(max_length=100, unique=True)),
-                ('avatar', models.ImageField(blank=True, upload_to=user.utils.generate_avatar_path)),
+                ('avatar', models.ImageField(blank=True, upload_to=user_profile.utils.generate_avatar_path)),
                 ('bio', models.TextField(blank=True)),
                 ('city', models.CharField(blank=True, max_length=100)),
                 ('country', models.CharField(blank=True, max_length=100)),
