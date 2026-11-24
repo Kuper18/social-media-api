@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from follower.models import Follower
-from user.models import Profile
+from user_profile.models import Profile
 
 
 class FollowerViewSet(GenericViewSet):

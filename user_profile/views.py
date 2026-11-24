@@ -7,12 +7,15 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from user.filters import ProfileFilter
-from user.models import Profile
-from user.paginations import PageNumberPagination
-from user.permissions import IsOwnerOrReadOnly
-from user.serializers import AvatarSerializer, ProfileSerializer
-from user.serializers.profile import ProfileRetrieveSerializer
+from user_profile.filters import ProfileFilter
+from user_profile.models import Profile
+from user_profile.paginations import PageNumberPagination
+from user_profile.permissions import IsOwnerOrReadOnly
+from user_profile.serializers import (
+    AvatarSerializer,
+    ProfileRetrieveSerializer,
+    ProfileSerializer,
+)
 
 
 class ProfileViewSet(

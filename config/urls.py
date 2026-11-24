@@ -24,6 +24,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("user.urls", namespace="user")),
     path("api/", include("follower.urls", namespace="follower")),
+    path("api/", include("user_profile.urls", namespace="user_profile")),
 ]
 
 if IS_DEV:
