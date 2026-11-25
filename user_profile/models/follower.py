@@ -24,6 +24,7 @@ class Follower(models.Model):
             UniqueConstraint(
                 fields=("follower", "following"),
                 name="unique_follow_relationship",
+                violation_error_message="You already follow this user.",
             ),
             CheckConstraint(
                 condition=~Q(follower=F("following")),

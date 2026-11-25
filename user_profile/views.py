@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from user_profile.filters import ProfileFilter
-from user_profile.models import Profile
+from user_profile.models import Follower, Profile
 from user_profile.paginations import PageNumberPagination
 from user_profile.permissions import IsOwnerOrReadOnly
 from user_profile.serializers import (
@@ -16,6 +16,7 @@ from user_profile.serializers import (
     ProfileRetrieveSerializer,
     ProfileSerializer,
 )
+from user_profile.serializers.follower import FollowSerializer
 
 
 class ProfileViewSet(
@@ -32,12 +33,23 @@ class ProfileViewSet(
     filterset_class = ProfileFilter
     search_fields = ("nickname",)
 
+    def get_permissions(self):
+        if self.action in ("follow", "list", "retrieve"):
+            permission_classes = (IsAuthenticated,)
+        else:
+            permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+
+        return [permission() for permission in permission_classes]
+
     def get_serializer_class(self):
         if self.action == "upload_avatar":
             return AvatarSerializer
 
         if self.action == "retrieve":
             return ProfileRetrieveSerializer
+
+        if self.action == "follow":
+            return FollowSerializer
 
         return ProfileSerializer
 
@@ -52,3 +64,36 @@ class ProfileViewSet(
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=["POST", "DELETE"], url_path="follow")
+    def follow(self, request: Request, pk=None) -> Response:
+        following_profile = self.get_object()
+
+        if request.method == "POST":
+            serializer = self.get_serializer(
+                data={
+                    "follower": request.user.id,
+                    "following": following_profile.user.id,
+                },
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            return Response(
+                {"detail": "You are following this user."},
+                status=status.HTTP_201_CREATED,
+            )
+
+        is_deleted, _ = Follower.objects.filter(
+            follower=request.user.id, following=following_profile.user.id
+        ).delete()
+
+        if not is_deleted:
+            return Response(
+                {"detail": "You are not following this user."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
+        )
