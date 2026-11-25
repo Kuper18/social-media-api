@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -56,6 +57,11 @@ class ProfileViewSet(
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def _get_paginated_profiles(self, profiles: QuerySet) -> Response:
+        page = self.paginate_queryset(profiles)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
     @action(detail=True, methods=["POST"], url_path="upload-avatar")
     def upload_avatar(self, request: Request, pk=None) -> Response:
         profile = self.get_object()
@@ -67,6 +73,7 @@ class ProfileViewSet(
 
     @action(detail=True, methods=["POST", "DELETE"], url_path="follow")
     def follow(self, request: Request, pk=None) -> Response:
+
         following_profile = self.get_object()
 
         if request.method == "POST":
@@ -97,3 +104,19 @@ class ProfileViewSet(
         return Response(
             status=status.HTTP_204_NO_CONTENT,
         )
+
+    @action(detail=True, methods=["GET"], url_path="followers")
+    def followers(self, request: Request, pk=None) -> Response:
+        profile = self.get_object()
+        followers = Profile.objects.filter(
+            user__following__following=profile.user.id
+        )
+        return self._get_paginated_profiles(followers)
+
+    @action(detail=True, methods=["GET"], url_path="following")
+    def following(self, request: Request, pk=None) -> Response:
+        profile = self.get_object()
+        following = Profile.objects.filter(
+            user__followers__follower=profile.user.id
+        )
+        return self._get_paginated_profiles(following)
