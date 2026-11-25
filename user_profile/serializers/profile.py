@@ -34,6 +34,18 @@ class ProfileSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class ProfileListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = (
+            "id",
+            "nickname",
+            "avatar",
+            "city",
+            "created_at",
+        )
+
+
 class ProfileRetrieveSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(
         source="user.first_name", read_only=True

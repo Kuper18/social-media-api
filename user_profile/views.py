@@ -18,6 +18,7 @@ from user_profile.serializers import (
     ProfileSerializer,
 )
 from user_profile.serializers.follower import FollowSerializer
+from user_profile.serializers.profile import ProfileListSerializer
 
 
 class ProfileViewSet(
@@ -51,6 +52,9 @@ class ProfileViewSet(
 
         if self.action == "follow":
             return FollowSerializer
+
+        if self.action in ("list", "following", "followers"):
+            return ProfileListSerializer
 
         return ProfileSerializer
 
