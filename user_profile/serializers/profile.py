@@ -51,6 +51,8 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
         source="user.first_name", read_only=True
     )
     last_name = serializers.CharField(source="user.last_name", read_only=True)
+    followers = serializers.IntegerField(read_only=True)
+    following = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Profile
@@ -65,6 +67,8 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
             "country",
             "education",
             "birth_date",
+            "followers",
+            "following",
             "created_at",
         )
 

@@ -1,4 +1,4 @@
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -28,12 +28,26 @@ class ProfileViewSet(
     mixins.ListModelMixin,
     GenericViewSet,
 ):
-    queryset = Profile.objects.select_related("user")
+    queryset = Profile.objects.all()
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     pagination_class = PageNumberPagination
     filter_backends = (SearchFilter, DjangoFilterBackend)
     filterset_class = ProfileFilter
     search_fields = ("nickname",)
+
+    def get_queryset(self):
+        queryset = self.queryset
+
+        if self.action in ("retrieve", "follow", "followers", "following"):
+            queryset = queryset.select_related("user")
+
+        if self.action == "retrieve":
+            queryset = queryset.annotate(
+                followers=Count("user__followers__follower"),
+                following=Count("user__following__following"),
+            )
+
+        return queryset
 
     def get_permissions(self):
         if self.action in ("follow", "list", "retrieve"):
