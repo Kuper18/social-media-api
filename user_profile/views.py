@@ -38,11 +38,8 @@ class ProfileViewSet(
     def get_queryset(self):
         queryset = self.queryset
 
-        if self.action in ("retrieve", "follow", "followers", "following"):
-            queryset = queryset.select_related("user")
-
         if self.action == "retrieve":
-            queryset = queryset.annotate(
+            queryset = queryset.select_related("user").annotate(
                 followers=Count("user__followers__follower"),
                 following=Count("user__following__following"),
             )
@@ -98,7 +95,7 @@ class ProfileViewSet(
             serializer = self.get_serializer(
                 data={
                     "follower": request.user.id,
-                    "following": following_profile.user.id,
+                    "following": following_profile.user_id,
                 },
             )
             serializer.is_valid(raise_exception=True)
@@ -110,7 +107,7 @@ class ProfileViewSet(
             )
 
         is_deleted, _ = Follower.objects.filter(
-            follower=request.user.id, following=following_profile.user.id
+            follower=request.user.id, following=following_profile.user_id
         ).delete()
 
         if not is_deleted:
@@ -127,7 +124,7 @@ class ProfileViewSet(
     def followers(self, request: Request, pk=None) -> Response:
         profile = self.get_object()
         followers = Profile.objects.filter(
-            user__following__following=profile.user.id
+            user__following__following=profile.user_id
         )
         return self._get_paginated_profiles(followers)
 
@@ -135,6 +132,6 @@ class ProfileViewSet(
     def following(self, request: Request, pk=None) -> Response:
         profile = self.get_object()
         following = Profile.objects.filter(
-            user__followers__follower=profile.user.id
+            user__followers__follower=profile.user_id
         )
         return self._get_paginated_profiles(following)
