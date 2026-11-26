@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from user.models import Profile
+from user_profile.models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -34,11 +34,25 @@ class ProfileSerializer(serializers.ModelSerializer):
         return attrs
 
 
+class ProfileListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = (
+            "id",
+            "nickname",
+            "avatar",
+            "city",
+            "created_at",
+        )
+
+
 class ProfileRetrieveSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(
         source="user.first_name", read_only=True
     )
     last_name = serializers.CharField(source="user.last_name", read_only=True)
+    followers = serializers.IntegerField(read_only=True)
+    following = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Profile
@@ -53,6 +67,8 @@ class ProfileRetrieveSerializer(serializers.ModelSerializer):
             "country",
             "education",
             "birth_date",
+            "followers",
+            "following",
             "created_at",
         )
 

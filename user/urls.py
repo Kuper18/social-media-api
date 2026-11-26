@@ -1,5 +1,4 @@
-from django.urls import include, path
-from rest_framework import routers
+from django.urls import path
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -9,13 +8,9 @@ from user.views import (
     CreateUserView,
     ForgotPasswordView,
     LoginView,
-    ProfileViewSet,
     ResendConfirmationView,
     ResetPasswordView,
 )
-
-router = routers.DefaultRouter()
-router.register("profiles", ProfileViewSet)
 
 urlpatterns = (
     path("register/", CreateUserView.as_view(), name="create-user"),
@@ -41,7 +36,6 @@ urlpatterns = (
         ResetPasswordView.as_view(),
         name="reset-password",
     ),
-    path("", include(router.urls)),
 )
 
 app_name = "user"

@@ -1,6 +1,6 @@
 import django_filters
 
-from user.models import Profile
+from user_profile.models import Profile
 
 
 class ProfileFilter(django_filters.FilterSet):

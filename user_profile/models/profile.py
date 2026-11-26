@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.functions import Lower
 
 from config import settings
-from user.utils import generate_avatar_path
+from user_profile.utils import generate_avatar_path
 
 
 class Profile(models.Model):
