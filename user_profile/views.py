@@ -40,8 +40,8 @@ class ProfileViewSet(
 
         if self.action == "retrieve":
             queryset = queryset.select_related("user").annotate(
-                followers=Count("user__followers__follower"),
-                following=Count("user__following__following"),
+                followers=Count("user__followers", distinct=True),
+                following=Count("user__following", distinct=True),
             )
 
         return queryset
